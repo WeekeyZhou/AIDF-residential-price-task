@@ -1,0 +1,9 @@
+{
+  "indicator_id": "cpi",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M213751?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:19:56.835799+00:00",
+  "bytes": 29250,
+  "sha256": "b5e31cb544cde08c8006373d46107df48386b4c08ca6d8bac46b4996ac85e3b6",
+  "file": "20261004T121956835799Z_b5e31cb5.json"
+}

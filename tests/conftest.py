@@ -50,7 +50,9 @@ def default_tables():
     return {
         "M700071": payload("M700071", "M", [
             ("1", "Prime Lending Rate", "Per Cent Per Annum", monthly(2024, 32, 5.25, 0.0)),
-            ("7", "Singapore Overnight Rate Average", "Per Cent Per Annum", monthly(2024, 32, 3.60, -0.07)),
+            ("21", "Singapore Overnight Rate Average", "Per Cent Per Annum", monthly(2024, 32, 3.50, -0.07)),
+            ("23", "Compounded Singapore Overnight Rate Average (SORA) - 3 Month", "Per Cent Per Annum",
+             monthly(2024, 32, 3.60, -0.07)),
         ]),
         "M213751": payload("M213751", "M", [("1", "All Items", "Index", monthly(2024, 32, 99.0, 0.1))]),
         "M015651": payload("M015651", "Q", [

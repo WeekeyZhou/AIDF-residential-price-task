@@ -1,0 +1,9 @@
+{
+  "indicator_id": "sora",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M700071?limit=2000&sortBy=key+desc",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:19:56.553175+00:00",
+  "bytes": 71310,
+  "sha256": "8e5cce6468162c24b8eb1e8999e660427942b427541040ccd91f99921dcb7e62",
+  "file": "20261004T121956553175Z_8e5cce64.json"
+}

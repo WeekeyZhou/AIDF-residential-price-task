@@ -1,0 +1,71 @@
+{
+  "report_date": "2026-10-04",
+  "mode": "live",
+  "code_version": "1.0.0",
+  "config_sha256": "f77460db2ae2112c18c0747c53f51dab0e0c5fb1768ea2e4f672b8c39196c7e8",
+  "commentary_mode": {
+    "sale": "template",
+    "rent": "template"
+  },
+  "status": {
+    "sora": "OK",
+    "cpi": "OK",
+    "gdp_nominal": "OK",
+    "unemployment_resident": "OK",
+    "population": "OK",
+    "pipeline_nonlanded": "OK",
+    "stock_available": "OK",
+    "stock_vacant": "OK",
+    "vacancy_rate": "OK"
+  },
+  "snapshots": {
+    "sora": {
+      "file": "sora/20261004T122128805190Z_04768d2d.json",
+      "sha256": "04768d2d8a073d0e27d67cd73dda75b31df808897e13bf442a18e2da203f14a0",
+      "retrieved_at": "2026-10-04T12:21:28.805190+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M700071?limit=2000&sortBy=key+desc&seriesNoORrowNo=23"
+    },
+    "cpi": {
+      "file": "cpi/20261004T122129122376Z_b5e31cb5.json",
+      "sha256": "b5e31cb544cde08c8006373d46107df48386b4c08ca6d8bac46b4996ac85e3b6",
+      "retrieved_at": "2026-10-04T12:21:29.122376+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M213751?limit=2000&sortBy=key+desc&seriesNoORrowNo=1"
+    },
+    "gdp_nominal": {
+      "file": "gdp_nominal/20261004T122129244188Z_87b65120.json",
+      "sha256": "87b65120efd9005715a434348389379a8e766d516478f65a985282b3b2af407e",
+      "retrieved_at": "2026-10-04T12:21:29.244188+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M015651?limit=2000&sortBy=key+desc&seriesNoORrowNo=1"
+    },
+    "unemployment_resident": {
+      "file": "unemployment_resident/20261004T122129352214Z_f35c76ab.json",
+      "sha256": "f35c76ab87ef8bb966b1a5f35fd05b10358e5821d77bcf673faafdc525f5a68b",
+      "retrieved_at": "2026-10-04T12:21:29.352214+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M182342?limit=2000&sortBy=key+desc&seriesNoORrowNo=2"
+    },
+    "population": {
+      "file": "population/20261004T122129463167Z_d253c1c2.json",
+      "sha256": "d253c1c25d343759de1e270f79789c6abe4b0bb126a45b3dea930ab2686832c3",
+      "retrieved_at": "2026-10-04T12:21:29.463167+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M810001?limit=2000&sortBy=key+desc&seriesNoORrowNo=1"
+    },
+    "pipeline_nonlanded": {
+      "file": "pipeline_nonlanded/20261004T122129590519Z_317f8753.json",
+      "sha256": "317f875344edd2370aa15803477957dcfe6f60fbe93e944abb83d52130c5e835",
+      "retrieved_at": "2026-10-04T12:21:29.590519+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M400391?limit=2000&sortBy=key+desc&seriesNoORrowNo=2"
+    },
+    "stock_available": {
+      "file": "stock_available/20261004T122129714653Z_de735fca.json",
+      "sha256": "de735fca9f3f948151b891b12f0461d7b88df424e898ecaf2e25bb1abe2090fc",
+      "retrieved_at": "2026-10-04T12:21:29.714653+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M400841?limit=2000&sortBy=key+desc&seriesNoORrowNo=1"
+    },
+    "stock_vacant": {
+      "file": "stock_vacant/20261004T122129840851Z_ecc817b0.json",
+      "sha256": "ecc817b04074ff725b107a1c4cff35e0fccad2f58a229d9a1fa0c16d3e5f0894",
+      "retrieved_at": "2026-10-04T12:21:29.840851+00:00",
+      "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M400841?limit=2000&sortBy=key+desc&seriesNoORrowNo=2"
+    }
+  }
+}

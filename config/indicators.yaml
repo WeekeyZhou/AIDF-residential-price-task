@@ -21,9 +21,10 @@ source:
 
 indicators:
   - id: sora
-    name: Singapore Overnight Rate Average (SORA)
+    name: 3-Month Compounded SORA
     table: M700071
-    row_match: "(?i)overnight rate average|\\bSORA\\b"
+    series_no: "23"
+    row_match: "^Compounded Singapore Overnight Rate Average \\(SORA\\) - 3 Month$"
     expected_unit: "Per Cent Per Annum"
     frequency: M
     unit_kind: rate_bp
@@ -32,15 +33,17 @@ indicators:
     plausible_range: [-1, 15]
     effect: {sale: -1, rent: 0}
     definition: >-
-      Volume-weighted average rate of unsecured overnight interbank SGD
-      transactions, end of month, published by MAS.
+      Singapore Overnight Rate Average compounded over the preceding three
+      months, end of month, published by MAS. SORA is the volume-weighted
+      average rate of unsecured overnight interbank SGD transactions.
     rationale: >-
-      SORA is the benchmark for floating-rate Singapore mortgages, so it moves
-      monthly instalments and the amount buyers can borrow under the Total Debt
-      Servicing Ratio. Falling SORA raises purchasing power and supports sale
-      prices with a lag of a few quarters. The effect on rents is ambiguous
-      (cheaper mortgages pull tenants into buying but also lower landlords'
-      costs), so it is not used as a rental signal.
+      Three-month compounded SORA is the reference rate for most floating-rate
+      Singapore home loans, so it moves monthly instalments and the amount
+      buyers can borrow under the Total Debt Servicing Ratio. Falling SORA
+      raises purchasing power and supports sale prices with a lag of a few
+      quarters. The effect on rents is ambiguous (cheaper mortgages pull
+      tenants into buying but also lower landlords' costs), so it is not used
+      as a rental signal.
 
   - id: cpi
     name: Consumer Price Index, All Items (2024 = 100)

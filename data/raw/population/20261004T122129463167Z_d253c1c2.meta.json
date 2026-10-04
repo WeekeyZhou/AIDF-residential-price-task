@@ -1,0 +1,9 @@
+{
+  "indicator_id": "population",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M810001?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:21:29.463167+00:00",
+  "bytes": 4440,
+  "sha256": "d253c1c25d343759de1e270f79789c6abe4b0bb126a45b3dea930ab2686832c3",
+  "file": "20261004T122129463167Z_d253c1c2.json"
+}

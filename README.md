@@ -50,7 +50,7 @@ is `config/indicators.yaml`; adding an indicator is a config change.
 
 | Indicator | Publisher, table | Observed | Change shown in | Sale | Rent | Why |
 |---|---|---|---|---|---|---|
-| SORA | MAS, M700071 | Monthly | basis points | − | not used | Mortgage benchmark: sets instalments and borrowing capacity |
+| 3-month compounded SORA | MAS, M700071 | Monthly | basis points | − | not used | Mortgage benchmark: sets instalments and borrowing capacity |
 | CPI, All Items | DOS, M213751 | Monthly | % | + | + | Nominal anchor for rents and building costs; drives MAS policy |
 | Nominal GDP | DOS, M015651 | Quarterly | % (year-on-year only) | + | + | Income growth and corporate housing demand |
 | Resident unemployment rate, SA | MOM, M182342 | Quarterly | percentage points | − | − | Income security of the households that buy |
