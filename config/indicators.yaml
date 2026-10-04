@@ -1,0 +1,193 @@
+# Indicator registry. Everything the workflow knows about a series lives here,
+# so adding or replacing an indicator is a config change, not a code change.
+#
+# unit_kind decides how a change is expressed:
+#   pct      level or index      -> percentage change
+#   rate_bp  interest rate in %  -> basis points
+#   rate_pp  rate/share in %     -> percentage points
+#
+# effect: sign of the expected pressure on the market when the indicator RISES
+#   (+1 upward pressure, -1 downward pressure, 0 ambiguous / not used).
+#
+# pub_lag_days: typical days between period end and first publication. Used
+#   only for back-dated reports, to avoid using data not yet published then.
+# max_lag_days: if the newest usable observation is older than this at the
+#   report date, the indicator is flagged STALE.
+
+source:
+  name: SingStat Table Builder Developer API
+  base_url: https://tablebuilder.singstat.gov.sg/api/table/tabledata
+  limit: 2000
+
+indicators:
+  - id: sora
+    name: Singapore Overnight Rate Average (SORA)
+    table: M700071
+    row_match: "(?i)overnight rate average|\\bSORA\\b"
+    expected_unit: "Per Cent Per Annum"
+    frequency: M
+    unit_kind: rate_bp
+    pub_lag_days: 15
+    max_lag_days: 75
+    plausible_range: [-1, 15]
+    effect: {sale: -1, rent: 0}
+    definition: >-
+      Volume-weighted average rate of unsecured overnight interbank SGD
+      transactions, end of month, published by MAS.
+    rationale: >-
+      SORA is the benchmark for floating-rate Singapore mortgages, so it moves
+      monthly instalments and the amount buyers can borrow under the Total Debt
+      Servicing Ratio. Falling SORA raises purchasing power and supports sale
+      prices with a lag of a few quarters. The effect on rents is ambiguous
+      (cheaper mortgages pull tenants into buying but also lower landlords'
+      costs), so it is not used as a rental signal.
+
+  - id: cpi
+    name: Consumer Price Index, All Items (2024 = 100)
+    table: M213751
+    series_no: "1"
+    row_match: "^All Items$"
+    expected_unit: "Index"
+    frequency: M
+    unit_kind: pct
+    pub_lag_days: 25
+    max_lag_days: 75
+    plausible_range: [10, 400]
+    effect: {sale: 1, rent: 1}
+    definition: >-
+      Price index of a fixed basket of goods and services bought by resident
+      households, not seasonally adjusted, published by DOS.
+    rationale: >-
+      General inflation anchors nominal rents and construction and replacement
+      costs, and it is the input MAS reacts to when setting policy, which feeds
+      back into interest rates. Housing rent is itself a CPI component, so for
+      rents this is partly a coincident rather than a leading signal.
+
+  - id: gdp_nominal
+    name: GDP at Current Market Prices
+    table: M015651
+    series_no: "1"
+    row_match: "^GDP At Current Market Prices$"
+    expected_unit: "Million Dollars"
+    frequency: Q
+    unit_kind: pct
+    seasonal: true
+    pub_lag_days: 45
+    max_lag_days: 160
+    plausible_range: [1000, 2000000]
+    effect: {sale: 1, rent: 1}
+    definition: >-
+      Quarterly gross domestic product at current prices, S$ million, not
+      seasonally adjusted, published by DOS.
+    rationale: >-
+      Nominal income growth is the main driver of housing affordability and of
+      corporate demand for expatriate housing. The series is not seasonally
+      adjusted, so only the year-on-year change is interpreted.
+
+  - id: unemployment_resident
+    name: Resident Unemployment Rate (seasonally adjusted)
+    table: M182342
+    series_no: "2"
+    row_match: "^Resident Unemployment Rate, \\(SA\\)$"
+    expected_unit: "Per Cent"
+    frequency: Q
+    unit_kind: rate_pp
+    pub_lag_days: 35
+    max_lag_days: 160
+    plausible_range: [0, 15]
+    effect: {sale: -1, rent: -1}
+    definition: >-
+      Unemployed residents as a share of the resident labour force, end of
+      quarter, seasonally adjusted, published by MOM.
+    rationale: >-
+      Residents are the buyers of most homes. Rising unemployment weakens
+      income security and loan eligibility, reducing purchase demand and
+      tenants' ability to pay.
+
+  - id: population
+    name: Total Population
+    table: M810001
+    series_no: "1"
+    row_match: "^Total Population$"
+    expected_unit: "Number"
+    frequency: A
+    annual_ref_month: 6
+    unit_kind: pct
+    pub_lag_days: 90
+    max_lag_days: 500
+    plausible_range: [1000000, 10000000]
+    effect: {sale: 1, rent: 1}
+    definition: >-
+      Residents plus non-residents as at end-June each year, published by DOS.
+    rationale: >-
+      Population growth is the basic source of housing demand. In Singapore
+      most of the variation comes from non-residents, who cannot buy public
+      housing and mostly rent, so this is the strongest demand-side signal for
+      the rental market.
+
+  - id: pipeline_nonlanded
+    name: Private Non-Landed Homes in the Supply Pipeline
+    table: M400391
+    series_no: "2"
+    row_match: "^Total Non-Landed Properties$"
+    expected_unit: "Number Of Units"
+    frequency: Q
+    unit_kind: pct
+    pub_lag_days: 28
+    max_lag_days: 160
+    plausible_range: [1000, 300000]
+    effect: {sale: -1, rent: -1}
+    definition: >-
+      Uncompleted private apartments and condominium units under construction
+      or planned, end of quarter, published by URA.
+    rationale: >-
+      Units in the pipeline become completed stock within roughly two to four
+      years. A growing pipeline signals future supply that competes with
+      existing homes for both buyers and tenants.
+
+  - id: stock_available
+    name: Completed Private Homes (available stock)
+    table: M400841
+    series_no: "1"
+    row_match: "^All Types Private Residential Properties Available$"
+    expected_unit: "Number Of Units"
+    frequency: Q
+    unit_kind: pct
+    pub_lag_days: 28
+    max_lag_days: 160
+    plausible_range: [10000, 2000000]
+    report: false
+    definition: Completed private residential units, end of quarter (URA).
+
+  - id: stock_vacant
+    name: Vacant Completed Private Homes
+    table: M400841
+    series_no: "2"
+    row_match: "^All Types Private Residential Properties Vacant$"
+    expected_unit: "Number Of Units"
+    frequency: Q
+    unit_kind: pct
+    pub_lag_days: 28
+    max_lag_days: 160
+    plausible_range: [0, 500000]
+    report: false
+    definition: Completed private residential units that are vacant, end of quarter (URA).
+
+  - id: vacancy_rate
+    name: Private Residential Vacancy Rate
+    derived:
+      type: ratio_pct
+      numerator: stock_vacant
+      denominator: stock_available
+    frequency: Q
+    unit_kind: rate_pp
+    max_lag_days: 160
+    plausible_range: [0, 30]
+    effect: {sale: -1, rent: -1}
+    definition: >-
+      Vacant completed private homes divided by all completed private homes,
+      times 100. Computed by this workflow from the two URA series.
+    rationale: >-
+      Vacancy measures slack in the existing stock. Landlords cut asking rents
+      when units sit empty, so a rising vacancy rate is the most direct leading
+      signal for rents, and with a longer lag for sale prices.
