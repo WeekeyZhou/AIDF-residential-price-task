@@ -85,6 +85,16 @@ def test_report_is_reproducible_from_its_manifest(cfg, tables, tmp_path):
     assert (out / "report.md").read_bytes() == first
 
 
+def test_manifest_pins_the_exact_file_when_identical_content_was_downloaded_twice(cfg, tables, tmp_path):
+    go(cfg, tmp_path, FakeSession(tables))                 # first download
+    out, _, _ = go(cfg, tmp_path, FakeSession(tables))     # same content again: same checksum, new file
+    second = (out / "report.md").read_bytes()
+    manifest = tmp_path / "m.json"
+    manifest.write_bytes((out / "manifest.json").read_bytes())
+    go(cfg, tmp_path, session=None, manifest_path=manifest)
+    assert (out / "report.md").read_bytes() == second
+
+
 def test_revision_is_reported(cfg, tables, tmp_path):
     go(cfg, tmp_path, FakeSession(tables))
     obs = monthly(2024, 32, 99.0, 0.1)

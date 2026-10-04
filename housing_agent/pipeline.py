@@ -24,7 +24,7 @@ def _load(ind: Indicator, cfg: Config, raw_root: Path, mode: str, pinned: dict, 
     """Return (snapshot, series, origin, issues). Raises FetchError/ParseError if nothing usable."""
     issues = []
     if mode == "manifest":
-        snap = find_snapshot(raw_root, ind.id, pinned[ind.id]["sha256"])
+        snap = find_snapshot(raw_root, ind.id, pinned[ind.id]["sha256"], pinned[ind.id].get("file", ""))
         return snap, parse_series(snap.read(), ind), "stored snapshot pinned by manifest", issues
 
     stored = list_snapshots(raw_root, ind.id)

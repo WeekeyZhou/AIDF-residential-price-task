@@ -37,7 +37,7 @@ python -m housing_agent run --date 2026-10-04 --llm              # LLM-written c
 python -m housing_agent select-factors --date 2026-10-04         # screen the candidate pool (see below)
 python -m housing_agent select-factors --date 2026-10-04 --offline
 python -m housing_agent list-series M700071                      # inspect the rows of a source table
-python -m pytest                                                 # 33 tests, no network needed
+python -m pytest                                                 # 34 tests, no network needed
 ```
 
 Exit code: `0` all factors current; `1` report written using stale or

@@ -13,7 +13,7 @@ python -m housing_agent run --date 2026-10-04           # the report
 python -m housing_agent select-factors --date 2026-10-04  # the evidence behind the factor list
 ```
 
-No forecasting model is trained. I treated the task as two questions: which few series are worth watching and on what evidence, and how to make the path from the publisher to the report reliable and reproducible. The repository contains the code, 33 tests that run without network, the raw snapshots from a live run on 4 October 2026, the report that run produced, and the factor screening output.
+No forecasting model is trained. I treated the task as two questions: which few series are worth watching and on what evidence, and how to make the path from the publisher to the report reliable and reproducible. The repository contains the code, 34 tests that run without network, the raw snapshots from a live run on 4 October 2026, the report that run produced, and the factor screening output.
 
 # 2. Factor selection
 
@@ -75,7 +75,7 @@ Three findings shaped the final list.
 
 # 5. Testing, a failure, and the fix
 
-The 33 tests use payloads with the real API structure and a fake HTTP session. They cover parsing, unit handling, as-of selection, every row of the table above, byte-identical reproduction, the LLM number check, and the econometrics on simulated data where the right answer is known (a planted leading factor passes, noise does not, and a factor that only echoes past growth passes the lead test but fails the strict one).
+The 34 tests use payloads with the real API structure and a fake HTTP session. They cover parsing, unit handling, as-of selection, every row of the table above, byte-identical reproduction, the LLM number check, and the econometrics on simulated data where the right answer is known (a planted leading factor passes, noise does not, and a factor that only echoes past growth passes the lead test but fails the strict one).
 
 **Failure on the first live run.** The tests passed, but the first run against the real API returned exit code 2 with SORA unavailable. The SORA row was selected by a keyword pattern, and the live table contains both overnight SORA (series 21) and 3-month compounded SORA (series 23), so two rows matched. The workflow refused to guess and printed the rows it received. The guard did its job: taking the first match would have produced a plausible number from the wrong series. The cause was a test fixture simpler than reality. The fix was to select series 23 with an exact text match, since the compounded rate is the one home loans reference, and to add the second row to the fixture. Both steps are in the commit history.
 
@@ -98,6 +98,6 @@ I used Claude (Anthropic) as a coding assistant throughout, in a chat session wi
 
 - **Delegated to the AI:** proposing the candidate pool and rationale; writing the Python modules, the tests, the README and the first draft of this report; looking up SingStat table identifiers; implementing the screening regressions; diagnosing the SORA failure from the output I sent it and making the fix; preparing the initial commit history.
 - **Done by me:** setting the direction (asking for an econometric screening, choosing the six-factor list from its results, deciding the report layout), running every test and live run on my own machine, reporting the results back, and committing each step.
-- **How outputs were checked:** all 33 tests pass on my machine; the live run was repeated after the fix and returned exit code 0; three figures in the sample report were compared with the SingStat website; the update schedule stated for every factor was checked against the agencies' 2026 Q2 release dates (14 July, 24 July, 31 July, 11 August and 23 September); the screening output was read line by line against the factor list.
+- **How outputs were checked:** all 34 tests pass on my machine; the live run was repeated after the fix and returned exit code 0; three figures in the sample report were compared with the SingStat website; the update schedule stated for every factor was checked against the agencies' 2026 Q2 release dates (14 July, 24 July, 31 July, 11 August and 23 September); the screening output was read line by line against the factor list.
 
 Commits that include AI-written code carry a `Co-Authored-By` line. I am responsible for the submitted work.

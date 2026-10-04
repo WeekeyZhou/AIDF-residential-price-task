@@ -101,8 +101,13 @@ def list_snapshots(raw_root: Path, indicator_id: str) -> list[Snapshot]:
     return out
 
 
-def find_snapshot(raw_root: Path, indicator_id: str, sha256: str) -> Snapshot:
-    for snap in list_snapshots(raw_root, indicator_id):
-        if snap.sha256 == sha256:
+def find_snapshot(raw_root: Path, indicator_id: str, sha256: str, file: str = "") -> Snapshot:
+    """The snapshot recorded in a manifest. The same content can be downloaded more than once,
+    so the file name is matched first and the checksum alone is only a fallback."""
+    snaps = [s for s in list_snapshots(raw_root, indicator_id) if s.sha256 == sha256]
+    for snap in snaps:
+        if file.endswith(snap.path.name):
             return snap
+    if snaps:
+        return snaps[0]
     raise FetchError(f"{indicator_id}: no stored snapshot with sha256 {sha256[:12]}")
