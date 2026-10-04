@@ -34,6 +34,8 @@ class Indicator:
     effect: dict = field(default_factory=dict)
     definition: str = ""
     rationale: str = ""
+    role: str = "factor"  # "factor" or "target" (factor selection only)
+    transform: str = ""  # dlog4, diff4 or level (factor selection only)
 
 
 @dataclass(frozen=True)

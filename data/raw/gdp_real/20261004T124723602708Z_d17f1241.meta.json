@@ -1,0 +1,9 @@
+{
+  "indicator_id": "gdp_real",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M014812?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:47:23.602708+00:00",
+  "bytes": 8283,
+  "sha256": "d17f1241d872028b0b70972af8170096cbd830c32e4c1a434201cf95cae01a23",
+  "file": "20261004T124723602708Z_d17f1241.json"
+}

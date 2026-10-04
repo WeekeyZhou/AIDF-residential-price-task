@@ -1,0 +1,9 @@
+{
+  "indicator_id": "unemployment_total",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M182342?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:47:23.871890+00:00",
+  "bytes": 5806,
+  "sha256": "57bbcd21c38b9d0f0cb5554bdb502f6201c0882434b473a00669928123a08b97",
+  "file": "20261004T124723871890Z_57bbcd21.json"
+}

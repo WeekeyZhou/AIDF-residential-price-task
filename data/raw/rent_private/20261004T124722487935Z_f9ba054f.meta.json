@@ -1,0 +1,9 @@
+{
+  "indicator_id": "rent_private",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M212311?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:47:22.487935+00:00",
+  "bytes": 6163,
+  "sha256": "f9ba054fe0ac992afdae229383d9fa2b764a0badf8a10629b7707437801e5692",
+  "file": "20261004T124722487935Z_f9ba054f.json"
+}

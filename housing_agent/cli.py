@@ -49,6 +49,28 @@ def _cmd_list_series(args) -> int:
     return 0
 
 
+def _cmd_select(args) -> int:
+    from .selection import run_selection
+    cfg = load_config(args.candidates)
+    out_dir, results, problems = run_selection(cfg, args.date, Path(args.raw), Path(args.out), offline=args.offline)
+    def brief(r):
+        return f"h={r['h']} b={r['beta']:+.2f} t={r['t']:+.2f} p={r['p']:.4f} {'PASS' if r['passed'] else 'fail'}" \
+            if "p" in r else "not tested"
+    for target, res in results.items():
+        if target.startswith("_"):
+            continue
+        print(f"\n{target}  (AR order {res['ar_order']})")
+        for r in res["rows"]:
+            print(f"  {r['tier']:<7}{r['factor']:<23}lead: {brief(r['lead']):<46}strict: {brief(r['strict'])}"
+                  f"  prior:{r['agrees']}")
+        for pc in (res["pca"] or {}).get("lead", {}):
+            print(f"  {'pca':<7}{pc:<23}lead: {brief(res['pca']['lead'][pc]):<46}strict: {brief(res['pca']['strict'][pc])}")
+    for name, msg in problems.items():
+        print(f"\nNOT LOADED {name}: {msg}")
+    print(f"\nSelection report: {out_dir / 'factor_selection.md'}")
+    return 1 if problems else 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="housing_agent", description=__doc__)
     parser.add_argument("--config", default="config/indicators.yaml")
@@ -62,6 +84,14 @@ def main(argv=None) -> int:
     p.add_argument("--from-manifest", help="re-create a report from the exact snapshots in a manifest.json")
     p.add_argument("--llm", action="store_true", help="let an LLM write the commentary paragraphs (checked)")
     p.set_defaults(func=_cmd_run)
+
+    p = sub.add_parser("select-factors", help="screen candidate factors by predictive regression")
+    p.add_argument("--date", type=date.fromisoformat, default=date.today())
+    p.add_argument("--candidates", default="config/candidates.yaml")
+    p.add_argument("--raw", default="data/raw")
+    p.add_argument("--out", default="output")
+    p.add_argument("--offline", action="store_true")
+    p.set_defaults(func=_cmd_select)
 
     p = sub.add_parser("list-series", help="show the rows of a SingStat table")
     p.add_argument("table")

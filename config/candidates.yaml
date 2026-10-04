@@ -1,0 +1,77 @@
+# Candidate pool for factor selection (python -m housing_agent select-factors).
+#
+# role: target   the variable to be predicted
+# role: factor   a candidate predictor
+# transform (applied on quarterly data to obtain a stationary series):
+#   dlog4  100 x four-quarter log change   (indices and levels)
+#   diff4  four-quarter difference         (rates and shares, in their own unit)
+#   level  no transformation
+# effect: the sign expected from economic reasoning BEFORE looking at the
+#   results, recorded so the estimated sign can be compared with it.
+
+source:
+  name: SingStat Table Builder Developer API
+  base_url: https://tablebuilder.singstat.gov.sg/api/table/tabledata
+  limit: 2000
+
+indicators:
+  # ---- targets -----------------------------------------------------------
+  - {id: price_private, role: target, name: Private Residential Property Price Index,
+     table: M212261, series_no: "1", row_match: "^Residential Properties$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160}
+  - {id: rent_private, role: target, name: Private Residential Rental Index,
+     table: M212311, series_no: "1", row_match: "^Rental Index Of Residential Properties$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160}
+
+  # ---- financing ---------------------------------------------------------
+  - {id: sora, name: 3-Month Compounded SORA, table: M700071, series_no: "23",
+     row_match: "^Compounded Singapore Overnight Rate Average \\(SORA\\) - 3 Month$",
+     frequency: M, unit_kind: rate_bp, max_lag_days: 75, transform: diff4, effect: {sale: -1, rent: 0}}
+  - {id: sgs_2y, name: 2-Year Government Bond Yield, table: M700071, series_no: "13",
+     row_match: "^Government Securities - 2-Year Bond Yield$",
+     frequency: M, unit_kind: rate_bp, max_lag_days: 75, transform: diff4, effect: {sale: -1, rent: 0}}
+  - {id: sgs_10y, name: 10-Year Government Bond Yield, table: M700071, series_no: "15",
+     row_match: "^Government Securities - 10-Year Bond Yield$",
+     frequency: M, unit_kind: rate_bp, max_lag_days: 75, transform: diff4, effect: {sale: -1, rent: 0}}
+  - {id: usd_sgd, name: "Exchange Rate, SGD per USD", table: M700051, row_match: "^US Dollar$",
+     frequency: M, unit_kind: pct, max_lag_days: 75, transform: dlog4, effect: {sale: 0, rent: 0}}
+
+  # ---- income, activity, prices -------------------------------------------
+  - {id: cpi, name: "Consumer Price Index, All Items", table: M213751, series_no: "1", row_match: "^All Items$",
+     frequency: M, unit_kind: pct, max_lag_days: 75, transform: dlog4, effect: {sale: 1, rent: 1}}
+  - {id: gdp_nominal, name: GDP at Current Market Prices, table: M015651, series_no: "1",
+     row_match: "^GDP At Current Market Prices$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160, transform: dlog4, effect: {sale: 1, rent: 1}}
+  - {id: gdp_real, name: "Real GDP, seasonally adjusted", table: M014812, series_no: "1",
+     row_match: "^GDP In Chained \\(2015\\) Dollars$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160, transform: dlog4, effect: {sale: 1, rent: 1}}
+  - {id: unemployment_resident, name: Resident Unemployment Rate (SA), table: M182342, series_no: "2",
+     row_match: "^Resident Unemployment Rate, \\(SA\\)$",
+     frequency: Q, unit_kind: rate_pp, max_lag_days: 160, transform: diff4, effect: {sale: -1, rent: -1}}
+  - {id: unemployment_total, name: Total Unemployment Rate (SA), table: M182342, series_no: "1",
+     row_match: "^Total Unemployment Rate, \\(SA\\)$",
+     frequency: Q, unit_kind: rate_pp, max_lag_days: 160, transform: diff4, effect: {sale: -1, rent: -1}}
+  - {id: population, name: Total Population, table: M810001, series_no: "1", row_match: "^Total Population$",
+     frequency: A, annual_ref_month: 6, unit_kind: pct, max_lag_days: 500, transform: dlog4,
+     effect: {sale: 1, rent: 1}}
+
+  # ---- supply --------------------------------------------------------------
+  - {id: pipeline_nonlanded, name: Private Non-Landed Supply Pipeline, table: M400391, series_no: "2",
+     row_match: "^Total Non-Landed Properties$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160, transform: dlog4, effect: {sale: -1, rent: -1}}
+  - {id: stock_available, name: Completed Private Homes (stock growth), table: M400841, series_no: "1",
+     row_match: "^All Types Private Residential Properties Available$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160, transform: dlog4, effect: {sale: -1, rent: -1}}
+  - {id: stock_vacant, name: Vacant Completed Private Homes, table: M400841, series_no: "2",
+     row_match: "^All Types Private Residential Properties Vacant$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160, transform: dlog4, effect: {sale: -1, rent: -1}}
+  - {id: vacancy_level, name: Private Vacancy Rate (level),
+     derived: {type: ratio_pct, numerator: stock_vacant, denominator: stock_available},
+     frequency: Q, unit_kind: rate_pp, max_lag_days: 160, transform: level, effect: {sale: -1, rent: -1}}
+  - {id: vacancy_change, name: Private Vacancy Rate (4-quarter change),
+     derived: {type: ratio_pct, numerator: stock_vacant, denominator: stock_available},
+     frequency: Q, unit_kind: rate_pp, max_lag_days: 160, transform: diff4, effect: {sale: -1, rent: -1}}
+
+  # ---- public housing ------------------------------------------------------
+  - {id: hdb_resale, name: HDB Resale Price Index, table: M212161, row_match: "^HDB Resale Price Index$",
+     frequency: Q, unit_kind: pct, max_lag_days: 160, transform: dlog4, effect: {sale: 1, rent: 1}}

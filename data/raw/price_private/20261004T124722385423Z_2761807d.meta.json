@@ -1,0 +1,9 @@
+{
+  "indicator_id": "price_private",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M212261?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T12:47:22.385423+00:00",
+  "bytes": 8195,
+  "sha256": "2761807d7b3b7db2ea0ae9cb6bc8e587473ea9bbe3067baa27a3266f32723343",
+  "file": "20261004T124722385423Z_2761807d.json"
+}
