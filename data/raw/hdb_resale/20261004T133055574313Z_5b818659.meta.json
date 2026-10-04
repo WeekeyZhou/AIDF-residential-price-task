@@ -1,0 +1,9 @@
+{
+  "indicator_id": "hdb_resale",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M212161?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T13:30:55.574313+00:00",
+  "bytes": 6325,
+  "sha256": "5b818659642fdc8073efb87ba67193dbdcb99d5c67da5234bc91d843e0ab5ff6",
+  "file": "20261004T133055574313Z_5b818659.json"
+}

@@ -1,0 +1,9 @@
+{
+  "indicator_id": "pipeline_nonlanded",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M400391?limit=2000&sortBy=key+desc&seriesNoORrowNo=2",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T13:30:55.850941+00:00",
+  "bytes": 5419,
+  "sha256": "317f875344edd2370aa15803477957dcfe6f60fbe93e944abb83d52130c5e835",
+  "file": "20261004T133055850941Z_317f8753.json"
+}

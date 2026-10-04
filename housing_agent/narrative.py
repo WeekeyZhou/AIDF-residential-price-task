@@ -17,6 +17,11 @@ from .formatting import fmt_change, fmt_value
 
 FLAT = {"%": 0.1, "bp": 5.0, "pp": 0.05}  # smaller moves are "little changed"
 MARKETS = {"sale": "sale prices", "rent": "rents"}
+EVIDENCE = {
+    "strict": "passes the strict test (predicts beyond the market's own momentum)",
+    "lead": "passes the lead test only (leads the market, but adds nothing beyond its momentum)",
+    "prior": "kept on economic reasoning; not statistically supported in the screening",
+}
 DISCLAIMER = ("These are directional readings of leading indicators against their own "
               "history. They are not a forecast of prices or rents.")
 _NUMBER = re.compile(r"\d[\d,]*(?:\.\d+)?")
@@ -37,6 +42,9 @@ def reading(res: Result, market: str) -> dict | None:
              0: "little changed"}
     text = (f"{res.indicator.name} was {fmt_value(res.series.unit, res.value)} in {res.period.label}, "
             f"{fmt_change(comp.unit, comp.change)} year-on-year: {words[direction]}.")
+    tier = res.indicator.evidence.get(market)
+    if tier:
+        text += f" [Evidence: {tier}]"
     if res.status == "STALE":
         text += " (Stale data.)"
     return {"id": res.indicator.id, "direction": direction, "text": text}

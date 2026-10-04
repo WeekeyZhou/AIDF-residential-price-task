@@ -63,6 +63,7 @@ def default_tables():
             ("2", "Resident Unemployment Rate, (SA)", "Per Cent", quarterly(2024, 10, 2.7, 0.02)),
         ]),
         "M810001": payload("M810001", "A", [("1", "Total Population", "Number", annual(2020, 7, 5600000, 80000))]),
+        "M212161": payload("M212161", "Q", [("1", "HDB Resale Price Index", "Index", quarterly(2024, 10, 180.0, 2.5))]),
         "M400391": payload("M400391", "Q", [
             ("1", "Total Landed Properties", "Number Of Units", quarterly(2024, 10, 1300, 0)),
             ("2", "Total Non-Landed Properties", "Number Of Units", quarterly(2024, 10, 40000, 1200)),
@@ -101,7 +102,7 @@ class FakeSession:
 
 @pytest.fixture
 def cfg():
-    return load_config(ROOT / "config" / "indicators.yaml")
+    return load_config(ROOT / "tests" / "fixtures" / "indicators.yaml")
 
 
 @pytest.fixture

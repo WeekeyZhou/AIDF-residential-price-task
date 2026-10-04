@@ -58,7 +58,7 @@ def test_no_data_at_all_still_produces_a_report(cfg, tables, tmp_path):
     out, results, code = go(cfg, tmp_path, FakeSession(tables, fail={"M400841": 503}))
     status = {r.indicator.id: r.status for r in results}
     assert code == 2 and status["vacancy_rate"] == "UNAVAILABLE" and status["cpi"] == "OK"
-    assert "| Private Residential Vacancy Rate | n/a | n/a | n/a | n/a | UNAVAILABLE |" in \
+    assert "| Private Residential Vacancy Rate | UNAVAILABLE | n/a | n/a | n/a | n/a | n/a | n/a |" in \
         (out / "report.md").read_text(encoding="utf-8")
 
 
@@ -120,3 +120,31 @@ def test_llm_text_with_an_invented_number_is_rejected(cfg, tables, tmp_path):
     def boom(prompt):
         raise TimeoutError("api down")
     assert write_commentary(facts, llm=boom)["rent"]["mode"] == "template"
+
+
+def test_production_registry_runs_and_reads_only_factors_with_evidence(tables, tmp_path):
+    from conftest import ROOT
+    from housing_agent.config import load_config
+    prod = load_config(ROOT / "config" / "indicators.yaml")
+    out, results, code = run(prod, D, tmp_path / "raw", tmp_path / "out", session=FakeSession(tables))
+    assert code == 0
+    for ind in prod.indicators:  # a market is read if and only if the screening gave it an evidence tier
+        for market in ("sale", "rent"):
+            assert bool(ind.effect.get(market)) == (market in ind.evidence), (ind.id, market)
+    facts = build_facts([r for r in results if r.indicator.report])
+    assert [r["id"] for r in facts["sale"]["readings"]] == ["vacancy_rate", "gdp_nominal", "hdb_resale", "sora"]
+    assert [r["id"] for r in facts["rent"]["readings"]] == ["vacancy_rate", "gdp_nominal", "unemployment_resident"]
+    report = (out / "report.md").read_text(encoding="utf-8")
+    assert "| lead / strict | upward | upward |" in report          # vacancy rate fell: supportive for both
+    assert "| monitored only | not used | not used |" in report      # supply pipeline is not read
+    assert "| prior / not used | upward | not used |" in report      # SORA fell: read for sale only
+
+
+def test_stale_and_llm_notes_stay_visible_without_a_status_column(cfg, tables, tmp_path):
+    from datetime import date
+    out, _, code = run(cfg, date(2027, 6, 1), tmp_path / "raw", tmp_path / "out", session=FakeSession(tables),
+                       llm=lambda prompt: "Prices will rise 9.9% next year.")
+    report = (out / "report.md").read_text(encoding="utf-8")
+    assert code == 1 and "| 2026 Aug (STALE) |" in report
+    assert "## 2. Indicators and traceability" in report           # no commentary section when the LLM text is rejected
+    assert "**commentary (sale)**: LLM text rejected" in report

@@ -7,7 +7,13 @@
 #   rate_pp  rate/share in %     -> percentage points
 #
 # effect: sign of the expected pressure on the market when the indicator RISES
-#   (+1 upward pressure, -1 downward pressure, 0 ambiguous / not used).
+#   (+1 upward pressure, -1 downward pressure, 0 not read as a directional signal).
+#
+# evidence: result of the factor screening (select-factors) for each market:
+#   strict  predicts the market beyond its own momentum
+#   lead    leads the market, but adds nothing beyond its momentum
+#   prior   kept on economic reasoning; not statistically supported
+#   A factor is read for a market only if it has an evidence tier there.
 #
 # pub_lag_days: typical days between period end and first publication. Used
 #   only for back-dated reports, to avoid using data not yet published then.
@@ -20,134 +26,6 @@ source:
   limit: 2000
 
 indicators:
-  - id: sora
-    name: 3-Month Compounded SORA
-    table: M700071
-    series_no: "23"
-    row_match: "^Compounded Singapore Overnight Rate Average \\(SORA\\) - 3 Month$"
-    expected_unit: "Per Cent Per Annum"
-    frequency: M
-    unit_kind: rate_bp
-    pub_lag_days: 15
-    max_lag_days: 75
-    plausible_range: [-1, 15]
-    effect: {sale: -1, rent: 0}
-    definition: >-
-      Singapore Overnight Rate Average compounded over the preceding three
-      months, end of month, published by MAS. SORA is the volume-weighted
-      average rate of unsecured overnight interbank SGD transactions.
-    rationale: >-
-      Three-month compounded SORA is the reference rate for most floating-rate
-      Singapore home loans, so it moves monthly instalments and the amount
-      buyers can borrow under the Total Debt Servicing Ratio. Falling SORA
-      raises purchasing power and supports sale prices with a lag of a few
-      quarters. The effect on rents is ambiguous (cheaper mortgages pull
-      tenants into buying but also lower landlords' costs), so it is not used
-      as a rental signal.
-
-  - id: cpi
-    name: Consumer Price Index, All Items (2024 = 100)
-    table: M213751
-    series_no: "1"
-    row_match: "^All Items$"
-    expected_unit: "Index"
-    frequency: M
-    unit_kind: pct
-    pub_lag_days: 25
-    max_lag_days: 75
-    plausible_range: [10, 400]
-    effect: {sale: 1, rent: 1}
-    definition: >-
-      Price index of a fixed basket of goods and services bought by resident
-      households, not seasonally adjusted, published by DOS.
-    rationale: >-
-      General inflation anchors nominal rents and construction and replacement
-      costs, and it is the input MAS reacts to when setting policy, which feeds
-      back into interest rates. Housing rent is itself a CPI component, so for
-      rents this is partly a coincident rather than a leading signal.
-
-  - id: gdp_nominal
-    name: GDP at Current Market Prices
-    table: M015651
-    series_no: "1"
-    row_match: "^GDP At Current Market Prices$"
-    expected_unit: "Million Dollars"
-    frequency: Q
-    unit_kind: pct
-    seasonal: true
-    pub_lag_days: 45
-    max_lag_days: 160
-    plausible_range: [1000, 2000000]
-    effect: {sale: 1, rent: 1}
-    definition: >-
-      Quarterly gross domestic product at current prices, S$ million, not
-      seasonally adjusted, published by DOS.
-    rationale: >-
-      Nominal income growth is the main driver of housing affordability and of
-      corporate demand for expatriate housing. The series is not seasonally
-      adjusted, so only the year-on-year change is interpreted.
-
-  - id: unemployment_resident
-    name: Resident Unemployment Rate (seasonally adjusted)
-    table: M182342
-    series_no: "2"
-    row_match: "^Resident Unemployment Rate, \\(SA\\)$"
-    expected_unit: "Per Cent"
-    frequency: Q
-    unit_kind: rate_pp
-    pub_lag_days: 35
-    max_lag_days: 160
-    plausible_range: [0, 15]
-    effect: {sale: -1, rent: -1}
-    definition: >-
-      Unemployed residents as a share of the resident labour force, end of
-      quarter, seasonally adjusted, published by MOM.
-    rationale: >-
-      Residents are the buyers of most homes. Rising unemployment weakens
-      income security and loan eligibility, reducing purchase demand and
-      tenants' ability to pay.
-
-  - id: population
-    name: Total Population
-    table: M810001
-    series_no: "1"
-    row_match: "^Total Population$"
-    expected_unit: "Number"
-    frequency: A
-    annual_ref_month: 6
-    unit_kind: pct
-    pub_lag_days: 90
-    max_lag_days: 500
-    plausible_range: [1000000, 10000000]
-    effect: {sale: 1, rent: 1}
-    definition: >-
-      Residents plus non-residents as at end-June each year, published by DOS.
-    rationale: >-
-      Population growth is the basic source of housing demand. In Singapore
-      most of the variation comes from non-residents, who cannot buy public
-      housing and mostly rent, so this is the strongest demand-side signal for
-      the rental market.
-
-  - id: pipeline_nonlanded
-    name: Private Non-Landed Homes in the Supply Pipeline
-    table: M400391
-    series_no: "2"
-    row_match: "^Total Non-Landed Properties$"
-    expected_unit: "Number Of Units"
-    frequency: Q
-    unit_kind: pct
-    pub_lag_days: 28
-    max_lag_days: 160
-    plausible_range: [1000, 300000]
-    effect: {sale: -1, rent: -1}
-    definition: >-
-      Uncompleted private apartments and condominium units under construction
-      or planned, end of quarter, published by URA.
-    rationale: >-
-      Units in the pipeline become completed stock within roughly two to four
-      years. A growing pipeline signals future supply that competes with
-      existing homes for both buyers and tenants.
-
   - id: stock_available
     name: Completed Private Homes (available stock)
     table: M400841
@@ -187,10 +65,145 @@ indicators:
     max_lag_days: 160
     plausible_range: [0, 30]
     effect: {sale: -1, rent: -1}
+    evidence: {sale: lead, rent: strict}
+    evidence_note: >-
+      The strongest factor in the screening. For rents both the level and the
+      four-quarter change pass the strict test. For sale prices the change
+      passes the lead test.
     definition: >-
       Vacant completed private homes divided by all completed private homes,
       times 100. Computed by this workflow from the two URA series.
     rationale: >-
       Vacancy measures slack in the existing stock. Landlords cut asking rents
       when units sit empty, so a rising vacancy rate is the most direct leading
-      signal for rents, and with a longer lag for sale prices.
+      signal for rents, and a weaker one for sale prices.
+
+  - id: gdp_nominal
+    name: GDP at Current Market Prices
+    table: M015651
+    series_no: "1"
+    row_match: "^GDP At Current Market Prices$"
+    expected_unit: "Million Dollars"
+    frequency: Q
+    unit_kind: pct
+    seasonal: true
+    pub_lag_days: 45
+    max_lag_days: 160
+    plausible_range: [1000, 2000000]
+    effect: {sale: 1, rent: 1}
+    evidence: {sale: lead, rent: strict}
+    evidence_note: >-
+      For sale prices nominal GDP is significant on its own in the lead test
+      but is nearly collinear with real GDP, which the screening keeps as the
+      stronger of the two. Nominal GDP is used here because it is the one that
+      passes the strict test for rents.
+    definition: >-
+      Quarterly gross domestic product at current prices, S$ million, not
+      seasonally adjusted, published by DOS.
+    rationale: >-
+      Nominal income growth is the main driver of housing affordability and of
+      corporate demand for expatriate housing. The series is not seasonally
+      adjusted, so only the year-on-year change is interpreted.
+
+  - id: hdb_resale
+    name: HDB Resale Price Index (2009 Q1 = 100)
+    table: M212161
+    series_no: "1"
+    row_match: "^HDB Resale Price Index$"
+    expected_unit: "Index"
+    frequency: Q
+    unit_kind: pct
+    pub_lag_days: 28
+    max_lag_days: 160
+    plausible_range: [10, 1000]
+    effect: {sale: 1, rent: 0}
+    evidence: {sale: lead}
+    evidence_note: >-
+      Passes the lead test for private sale prices. No relationship with
+      private rents was found, so it is not read for the rental market.
+    definition: >-
+      Index of resale prices of public (HDB) flats, quarterly, published by HDB.
+    rationale: >-
+      Most Singapore households live in HDB flats, and many buyers of private
+      homes are HDB owners who sell their flat to upgrade. Rising resale prices
+      raise the equity these upgraders bring to the private market.
+
+  - id: unemployment_resident
+    name: Resident Unemployment Rate (seasonally adjusted)
+    table: M182342
+    series_no: "2"
+    row_match: "^Resident Unemployment Rate, \\(SA\\)$"
+    expected_unit: "Per Cent"
+    frequency: Q
+    unit_kind: rate_pp
+    pub_lag_days: 35
+    max_lag_days: 160
+    plausible_range: [0, 15]
+    effect: {sale: 0, rent: -1}
+    evidence: {rent: lead}
+    evidence_note: >-
+      Passes the lead test for rents. For sale prices it is not significant,
+      and after controlling for momentum the estimated sign is positive, which
+      is consistent with prices rebounding after downturns as policy eases. It
+      is therefore not read for the sale market.
+    definition: >-
+      Unemployed residents as a share of the resident labour force, end of
+      quarter, seasonally adjusted, published by MOM.
+    rationale: >-
+      Rising unemployment weakens household income and tenants' ability to
+      pay, and reduces demand for rental housing from new workers.
+
+  - id: pipeline_nonlanded
+    name: Private Non-Landed Homes in the Supply Pipeline
+    table: M400391
+    series_no: "2"
+    row_match: "^Total Non-Landed Properties$"
+    expected_unit: "Number Of Units"
+    frequency: Q
+    unit_kind: pct
+    pub_lag_days: 28
+    max_lag_days: 160
+    plausible_range: [1000, 300000]
+    effect: {sale: 0, rent: 0}
+    evidence_note: >-
+      Monitored but not read as a directional signal. It passes the lead test
+      for both markets with a POSITIVE sign, the opposite of the supply
+      argument. The likely reason is that developers launch projects when the
+      market is strong, so at short horizons the pipeline reflects current
+      conditions rather than future supply pressure. The supply effect, if
+      any, would appear at horizons longer than the eight quarters tested.
+    definition: >-
+      Uncompleted private apartments and condominium units under construction
+      or planned, end of quarter, published by URA.
+    rationale: >-
+      Units in the pipeline become completed stock within roughly two to four
+      years, so a growing pipeline signals future supply that competes with
+      existing homes for both buyers and tenants.
+
+  - id: sora
+    name: 3-Month Compounded SORA
+    table: M700071
+    series_no: "23"
+    row_match: "^Compounded Singapore Overnight Rate Average \\(SORA\\) - 3 Month$"
+    expected_unit: "Per Cent Per Annum"
+    frequency: M
+    unit_kind: rate_bp
+    pub_lag_days: 15
+    max_lag_days: 75
+    plausible_range: [-1, 15]
+    effect: {sale: -1, rent: 0}
+    evidence: {sale: prior}
+    evidence_note: >-
+      Not significant in the screening, but the series only starts in 2005
+      (about 75 quarters), so the test has little power. It is kept because it
+      is the reference rate for home loans, and is labelled as resting on
+      economic reasoning only.
+    definition: >-
+      Singapore Overnight Rate Average compounded over the preceding three
+      months, end of month, published by MAS. SORA is the volume-weighted
+      average rate of unsecured overnight interbank SGD transactions.
+    rationale: >-
+      Three-month compounded SORA is the reference rate for most floating-rate
+      Singapore home loans, so it moves monthly instalments and the amount
+      buyers can borrow under the Total Debt Servicing Ratio. The effect on
+      rents is ambiguous, so it is not read for the rental market.
