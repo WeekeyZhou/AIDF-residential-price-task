@@ -70,6 +70,12 @@ indicators:
       The strongest factor in the screening. For rents both the level and the
       four-quarter change pass the strict test. For sale prices the change
       passes the lead test.
+    update_frequency: >-
+      Quarterly. URA releases its real estate statistics about four weeks after the quarter ends.
+    lag_note: >-
+      Short. In the screening the vacancy rate leads rents and sale prices by about one quarter, and its four-quarter change still leads rents a year ahead.
+    limitations: >-
+      Covers private housing only; public (HDB) flats are excluded. A falling rate can reflect units withdrawn for redevelopment rather than stronger demand.
     definition: >-
       Vacant completed private homes divided by all completed private homes,
       times 100. Computed by this workflow from the two URA series.
@@ -97,6 +103,12 @@ indicators:
       but is nearly collinear with real GDP, which the screening keeps as the
       stronger of the two. Nominal GDP is used here because it is the one that
       passes the strict test for rents.
+    update_frequency: >-
+      Quarterly. Advance estimates come about two weeks after the quarter ends and detailed figures about six weeks after; earlier quarters are revised.
+    lag_note: >-
+      About one quarter in the screening, for both sale prices and rents.
+    limitations: >-
+      Not seasonally adjusted, so only the year-on-year change is usable. Subject to revision. GDP growth is not the same as household income growth.
     definition: >-
       Quarterly gross domestic product at current prices, S$ million, not
       seasonally adjusted, published by DOS.
@@ -121,6 +133,12 @@ indicators:
     evidence_note: >-
       Passes the lead test for private sale prices. No relationship with
       private rents was found, so it is not read for the rental market.
+    update_frequency: >-
+      Quarterly. HDB publishes the index about four weeks after the quarter ends.
+    lag_note: >-
+      About one quarter ahead of private sale prices in the screening.
+    limitations: >-
+      Public and private prices respond to the same economic cycle, so part of the relationship is common movement rather than a causal upgrader effect. Cooling measures aimed at one segment can break the link.
     definition: >-
       Index of resale prices of public (HDB) flats, quarterly, published by HDB.
     rationale: >-
@@ -146,6 +164,12 @@ indicators:
       and after controlling for momentum the estimated sign is positive, which
       is consistent with prices rebounding after downturns as policy eases. It
       is therefore not read for the sale market.
+    update_frequency: >-
+      Quarterly. MOM publishes preliminary estimates about one month after the quarter ends and final figures about twelve weeks after. Seasonally adjusted figures are revised once a year.
+    lag_note: >-
+      About one quarter ahead of rents in the screening.
+    limitations: >-
+      Moves within a narrow range, so small changes carry little information. Does not cover non-resident workers, who make up much of the rental demand.
     definition: >-
       Unemployed residents as a share of the resident labour force, end of
       quarter, seasonally adjusted, published by MOM.
@@ -172,6 +196,12 @@ indicators:
       market is strong, so at short horizons the pipeline reflects current
       conditions rather than future supply pressure. The supply effect, if
       any, would appear at horizons longer than the eight quarters tested.
+    update_frequency: >-
+      Quarterly. URA releases its real estate statistics about four weeks after the quarter ends.
+    lag_note: >-
+      By construction two to four years, the time from planning to completion. This is longer than the eight quarters the screening could test.
+    limitations: >-
+      At short horizons it moves with the market cycle, not against it (see the statistical evidence above). Planned units may be delayed or cancelled.
     definition: >-
       Uncompleted private apartments and condominium units under construction
       or planned, end of quarter, published by URA.
@@ -198,6 +228,12 @@ indicators:
       (about 75 quarters), so the test has little power. It is kept because it
       is the reference rate for home loans, and is labelled as resting on
       economic reasoning only.
+    update_frequency: >-
+      Monthly in this table, about two weeks after the month ends. MAS publishes the underlying rate every business day.
+    lag_note: >-
+      Not estimated here. On economic reasoning two to four quarters, because floating-rate loans reprice every one to three months and purchase decisions follow with a delay.
+    limitations: >-
+      History starts in 2005, too short to test reliably. Many borrowers hold fixed-rate packages, which delays the pass-through. Rates and prices both respond to the global cycle.
     definition: >-
       Singapore Overnight Rate Average compounded over the preceding three
       months, end of month, published by MAS. SORA is the volume-weighted

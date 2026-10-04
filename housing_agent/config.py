@@ -36,6 +36,9 @@ class Indicator:
     rationale: str = ""
     evidence: dict = field(default_factory=dict)  # per market: strict, lead or prior (from factor selection)
     evidence_note: str = ""
+    update_frequency: str = ""  # how often and how soon the publisher updates the series
+    lag_note: str = ""  # possible time lag between the factor and the market
+    limitations: str = ""
     role: str = "factor"  # "factor" or "target" (factor selection only)
     transform: str = ""  # dlog4, diff4 or level (factor selection only)
 

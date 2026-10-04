@@ -1,12 +1,13 @@
-# Singapore Housing Indicator Workflow
+# Singapore Housing Factor Workflow
 
-One command takes a report date, downloads a small set of public macro
-indicators that lead Singapore home prices and rents, keeps the raw downloads
+One command takes a report date, downloads six public factors that may
+predict Singapore private home prices and rents, keeps the raw downloads
 as checksummed snapshots, computes period changes, and writes a report in
 which every figure is traced back to the published observations behind it.
 
-No forecasting model is trained. The aim is a small indicator set chosen with
-judgement, and a data path that is reliable and reproducible.
+No forecasting model is trained. The aim is a small factor set chosen with
+judgement and checked against the data, and a data path that is reliable and
+reproducible. `docs/Summary Report.pdf` is the write-up.
 
 ## Run it
 
@@ -19,7 +20,7 @@ Output goes to `output/<date>/`:
 
 | File | Content |
 |---|---|
-| `report.md` | The report: summary table, readings for the sale and rental markets, per-indicator rationale and traceability, data-quality log |
+| `report.md` | The report: summary table with the directional reading and evidence tier of each factor; per-factor source, definition, unit, frequencies, time lag, limitations and traceability; data-quality log |
 | `observations.csv` | Every validated observation in one long table (indicator, period, period end, value, published value, unit, snapshot checksum) |
 | `manifest.json` | Exactly which raw snapshots (file, SHA-256, retrieval time, URL) produced this report |
 
@@ -33,42 +34,68 @@ python -m housing_agent run --date 2026-10-04 --offline          # no network, n
 python -m housing_agent run --date 2026-10-04 --from-manifest output/2026-10-04/manifest.json
                                                                 # recreate a past report byte for byte
 python -m housing_agent run --date 2026-10-04 --llm              # LLM-written commentary (needs ANTHROPIC_API_KEY)
+python -m housing_agent select-factors --date 2026-10-04         # screen the candidate pool (see below)
+python -m housing_agent select-factors --date 2026-10-04 --offline
 python -m housing_agent list-series M700071                      # inspect the rows of a source table
-python -m pytest                                                 # 22 tests, no network needed
+python -m pytest                                                 # 33 tests, no network needed
 ```
 
-Exit code: `0` all indicators current; `1` report written using stale or
-fallback data; `2` report written but an indicator is unavailable. A report is
+Exit code: `0` all factors current; `1` report written using stale or
+fallback data; `2` report written but a factor is unavailable. A report is
 always written, so a scheduler can alert on the code and a reader still sees
 what is missing.
 
-## Indicators
+## Factors
 
 All series come from the SingStat Table Builder API, which republishes the
-official DOS, MAS, MOM and URA series with consistent metadata. The registry
-is `config/indicators.yaml`; adding an indicator is a config change.
+official MAS, DOS, MOM, URA and HDB series with consistent metadata. The
+registry is `config/indicators.yaml`; changing the factor list is a config
+change.
 
-| Indicator | Publisher, table | Observed | Change shown in | Sale | Rent | Why |
-|---|---|---|---|---|---|---|
-| 3-month compounded SORA | MAS, M700071 | Monthly | basis points | − | not used | Mortgage benchmark: sets instalments and borrowing capacity |
-| CPI, All Items | DOS, M213751 | Monthly | % | + | + | Nominal anchor for rents and building costs; drives MAS policy |
-| Nominal GDP | DOS, M015651 | Quarterly | % (year-on-year only) | + | + | Income growth and corporate housing demand |
-| Resident unemployment rate, SA | MOM, M182342 | Quarterly | percentage points | − | − | Income security of the households that buy |
-| Total population | DOS, M810001 | Annual (end-June) | % | + | + | Basic demand; non-resident inflows mostly rent |
-| Private non-landed supply pipeline | URA, M400391 | Quarterly | % | − | − | Completions two to four years ahead |
-| Private residential vacancy rate | derived from URA, M400841 | Quarterly | percentage points | − | − | Slack in the existing stock; the most direct rental signal |
+| Factor | Publisher, table | Observed | Change shown in | Read for sale prices | Read for rents |
+|---|---|---|---|---|---|
+| Private residential vacancy rate | derived from URA, M400841 | Quarterly | percentage points | − (lead) | − (strict) |
+| Nominal GDP | DOS, M015651 | Quarterly | % (year-on-year only) | + (lead) | + (strict) |
+| HDB resale price index | HDB, M212161 | Quarterly | % | + (lead) | not used |
+| Resident unemployment rate, SA | MOM, M182342 | Quarterly | percentage points | not used | − (lead) |
+| Private non-landed supply pipeline | URA, M400391 | Quarterly | % | monitored only | monitored only |
+| 3-month compounded SORA | MAS, M700071 | Monthly | basis points | − (prior) | not used |
 
-The sign is the expected pressure on prices or rents when the indicator rises.
-The full reasoning for each is in the config file and is printed in the report.
+The sign is the expected pressure when the factor rises. The word in brackets
+is the evidence tier from the screening below. A factor is read for a market
+only where it has a tier.
+
+## Factor selection
+
+`select-factors` screens the 16 candidates in `config/candidates.yaml` against
+the URA private price and rental indices and writes
+`output/selection/<date>/factor_selection.md` and `factor_tests.csv`.
+
+- **Lead test:** does the factor lead the cumulative change in the target over
+  the next 1, 2, 4 or 8 quarters?
+- **Strict test:** does it still do so after controlling for the target's own
+  past growth (autoregressive order chosen by BIC)?
+- Newey-West standard errors; Benjamini-Hochberg control of the false discovery
+  rate at 10% across all factor x horizon tests for a target; the sign must be
+  the same in both halves of the sample; near-duplicates are pruned.
+- Evidence tiers: **strict** passes the strict test, **lead** passes the lead
+  test only, **prior** is kept on economic reasoning without statistical support.
+- The same tests are run on the first three principal components of the pool
+  as a robustness check.
+
+This is a screening exercise on small samples, not a forecasting model. Its
+caveats are listed at the end of the selection report.
 
 ## How it works
 
 ```
-config/indicators.yaml          what to fetch, units, expected lags, rationale
+config/indicators.yaml          the six factors: what to fetch, units, lags, sign, evidence, rationale
+config/candidates.yaml          the 16-candidate pool and the two targets used for screening
 housing_agent/fetch.py          download with retry -> immutable snapshot + checksum
 housing_agent/parse.py          payload -> one validated series (or a precise error)
 housing_agent/analyse.py        as-of selection, changes, staleness, gaps, revisions
 housing_agent/narrative.py      rule-based readings; optional LLM paragraph with a number check
+housing_agent/selection.py      factor screening: predictive regressions, HAC errors, FDR, PCA
 housing_agent/report.py         Markdown report (pure function: no clock, no network)
 housing_agent/pipeline.py       orchestration, fallback, manifest, exit code
 housing_agent/cli.py            command line
@@ -77,10 +104,10 @@ housing_agent/cli.py            command line
 ### Where the agent/LLM sits
 
 The numbers are never produced by a model. Directional readings are computed
-by rule from the configured sign of each indicator. With `--llm`, a model
-rewrites those readings into one paragraph per market, and the text is accepted
-only if every number in it also appears in the computed facts; otherwise the
-rule-based paragraph is used and the rejection is noted in the report. Without
+by rule from the configured sign of each factor. With `--llm`, a model
+writes a short commentary from those readings, and the text is accepted only if
+every number in it also appears in the computed facts; otherwise it is dropped
+and the rejection is noted in the report. Without
 an API key the workflow runs fully deterministically.
 
 ### Reliability
@@ -89,11 +116,11 @@ an API key the workflow runs fully deterministically.
 |---|---|
 | Download fails (timeout, 5xx, 429) | Retried three times with backoff. Then the newest stored snapshot is used and the report says so (`download_failed`, `fallback`), exit code 1 |
 | HTTP 200 with an error body, or non-JSON | Rejected (`bad_payload`); falls back as above |
-| No data at all for an indicator | Marked UNAVAILABLE in the report, the rest is still produced, exit code 2 |
+| No data at all for a factor | Marked UNAVAILABLE in the report, the rest is still produced, exit code 2 |
 | Publisher inserts a row and series numbers shift | Row is matched on its text as well as its number; a mismatch is an error listing the rows returned |
-| Unit or frequency changes at the source | Fatal for that indicator: a silent unit change would corrupt every figure |
+| Unit or frequency changes at the source | Fatal for that factor: a silent unit change would corrupt every figure |
 | A period is missing or non-numeric | The change that needs it is shown as n/a. Changes are looked up by exact period, never by "previous row" |
-| Newest observation older than the indicator's expected lag | Flagged STALE in the summary table and data-quality section |
+| Newest observation older than the factor's expected lag | Marked STALE in the summary table and logged in the data-quality section |
 | Value outside a plausible range | Warning (`out_of_range`) |
 | Publisher revises history | Compared with the previous snapshot; revised periods are listed |
 | Report for a past date | Only periods ended by that date, less the typical publication lag, are used |
@@ -101,15 +128,17 @@ an API key the workflow runs fully deterministically.
 
 ## Sample output
 
-`output/` contains a sample report produced by a live run, and `data/raw/`
-the snapshots behind it, so `--from-manifest` can recreate it without network.
+`output/2026-10-04/` contains a sample report produced by a live run,
+`output/selection/2026-10-04/` the factor screening from the same day, and
+`data/raw/` the snapshots behind both, so `--from-manifest` and
+`select-factors --offline` can recreate them without network.
 
 ## Limitations
 
-- Single upstream API. If SingStat changes its interface, all indicators are affected at once; stored snapshots keep reports reproducible but not current.
+- Single upstream API. If SingStat changes its interface, all factors are affected at once; stored snapshots keep reports reproducible but not current.
 - A back-dated report uses today's vintage of the data with a publication-lag rule. It is not a true point-in-time vintage unless a snapshot from that date exists.
-- Directional signs are fixed judgements, not estimated relationships, and lags differ by indicator.
-- No public-housing (HDB) supply series and no household-income series are included.
+- The screening uses small samples and today's data vintage, ignores publication lags, and does not model cooling measures. Passing the lead test only means a factor moves ahead of the target.
+- Targets are private housing only, and no household-income series is included.
 
 ## Use of AI tools
 

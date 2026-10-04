@@ -131,10 +131,13 @@ def test_production_registry_runs_and_reads_only_factors_with_evidence(tables, t
     for ind in prod.indicators:  # a market is read if and only if the screening gave it an evidence tier
         for market in ("sale", "rent"):
             assert bool(ind.effect.get(market)) == (market in ind.evidence), (ind.id, market)
+        if ind.report:  # the brief asks for update frequency, time lag and limitations for every series
+            assert ind.update_frequency and ind.lag_note and ind.limitations and ind.definition and ind.rationale, ind.id
     facts = build_facts([r for r in results if r.indicator.report])
     assert [r["id"] for r in facts["sale"]["readings"]] == ["vacancy_rate", "gdp_nominal", "hdb_resale", "sora"]
     assert [r["id"] for r in facts["rent"]["readings"]] == ["vacancy_rate", "gdp_nominal", "unemployment_resident"]
     report = (out / "report.md").read_text(encoding="utf-8")
+    assert "**Update frequency.** Quarterly. HDB publishes" in report and "table/TS/M212161" in report
     assert "| lead / strict | upward | upward |" in report          # vacancy rate fell: supportive for both
     assert "| monitored only | not used | not used |" in report      # supply pipeline is not read
     assert "| prior / not used | upward | not used |" in report      # SORA fell: read for sale only
@@ -146,5 +149,5 @@ def test_stale_and_llm_notes_stay_visible_without_a_status_column(cfg, tables, t
                        llm=lambda prompt: "Prices will rise 9.9% next year.")
     report = (out / "report.md").read_text(encoding="utf-8")
     assert code == 1 and "| 2026 Aug (STALE) |" in report
-    assert "## 2. Indicators and traceability" in report           # no commentary section when the LLM text is rejected
+    assert "## 2. Factors and traceability" in report           # no commentary section when the LLM text is rejected
     assert "**commentary (sale)**: LLM text rejected" in report

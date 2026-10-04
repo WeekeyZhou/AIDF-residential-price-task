@@ -24,8 +24,8 @@ def _evidence(res: Result) -> str:
 def render(report_date: date, results: list[Result], facts: dict, commentary: dict) -> str:
     shown = [r for r in results if r.indicator.report]
     counts = {s: sum(r.status == s for r in shown) for s in ("OK", "STALE", "UNAVAILABLE")}
-    L = [f"# Singapore Housing Indicator Report: {report_date.isoformat()}", ""]
-    L += [f"Indicators: {len(shown)} ({counts['OK']} current, {counts['STALE']} stale, "
+    L = [f"# Singapore Housing Factor Report: {report_date.isoformat()}", ""]
+    L += [f"Factors: {len(shown)} ({counts['OK']} current, {counts['STALE']} stale, "
           f"{counts['UNAVAILABLE']} unavailable). Source: SingStat Table Builder (DOS, MAS, MOM, URA, HDB).",
           "", DISCLAIMER, ""]
 
@@ -38,7 +38,7 @@ def render(report_date: date, results: list[Result], facts: dict, commentary: di
         return words[signal[market][res.indicator.id]] if res.indicator.id in signal[market] else "n/a"
 
     L += ["## 1. Summary", "",
-          "| Indicator | Latest period | Value | Change on previous period | Change on year ago | "
+          "| Factor | Latest period | Value | Change on previous period | Change on year ago | "
           "Evidence: sale / rent | Pressure on sale prices | Pressure on rents |",
           "|---|---|---|---|---|---|---|---|"]
     for r in shown:
@@ -76,7 +76,7 @@ def render(report_date: date, results: list[Result], facts: dict, commentary: di
               "against the computed figures._", ""]
         section += 1
 
-    L += [f"## {section}. Indicators and traceability", ""]
+    L += [f"## {section}. Factors and traceability", ""]
     for r in shown:
         ind = r.indicator
         L += [f"### {ind.name}", "", f"**Why it is included.** {ind.rationale.strip()}", "",
@@ -84,14 +84,27 @@ def render(report_date: date, results: list[Result], facts: dict, commentary: di
         if ind.evidence or ind.evidence_note:
             L += [f"**Statistical evidence.** Sale: {ind.evidence.get('sale', 'not used')}. "
                   f"Rent: {ind.evidence.get('rent', 'not used')}. {ind.evidence_note.strip()}", ""]
+        if ind.lag_note:
+            L += [f"**Possible time lag.** {ind.lag_note.strip()}", ""]
+        if ind.limitations:
+            L += [f"**Limitations.** {ind.limitations.strip()}", ""]
         if r.status == "UNAVAILABLE":
             L += [f"**Unavailable:** {r.error}", ""]
             continue
         s = r.series
-        src = f"table {ind.table}, series {s.series_no} \"{s.row_text}\"" if ind.table else s.row_text
-        L += [f"**Source.** {s.datasource}; {src}. Unit: {s.unit}. Observed: {FREQUENCIES[ind.frequency].lower()}"
+        if ind.table:
+            src = (f"table {ind.table}, series {s.series_no} \"{s.row_text}\" "
+                   f"(https://tablebuilder.singstat.gov.sg/table/TS/{ind.table})")
+        else:
+            inputs = ", ".join(sorted({f"https://tablebuilder.singstat.gov.sg/table/TS/{x.indicator.table}"
+                                       for x in results if x.indicator.id in ind.derived.values()}))
+            src = f"{s.row_text} ({inputs})"
+        L += [f"**Source.** {s.datasource}; {src}.", "",
+              f"**Unit.** {s.unit}. **Observation frequency.** {FREQUENCIES[ind.frequency]}"
               f"{', ' + s.adjustment.lower() if s.adjustment else ''}. "
-              f"Source last updated: {s.data_last_updated or 'n/a'}.", "",
+              f"**Update frequency.** {ind.update_frequency.strip() or 'Not recorded.'} "
+              f"Source last updated {s.data_last_updated or 'n/a'}.", "",
+              f"**Latest observation.** {r.period.label}, as of report date {report_date.isoformat()}.", "",
               "| Figure | Calculation | Published observations used |", "|---|---|---|",
               f"| Value {fmt_value(s.unit, r.value)} | {'derived' if ind.derived else 'as published'} | "
               f"{r.period.label} = {r.raw} |"]

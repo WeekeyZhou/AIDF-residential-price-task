@@ -1,12 +1,12 @@
-# Singapore Housing Indicator Report: 2026-10-04
+# Singapore Housing Factor Report: 2026-10-04
 
-Indicators: 6 (6 current, 0 stale, 0 unavailable). Source: SingStat Table Builder (DOS, MAS, MOM, URA, HDB).
+Factors: 6 (6 current, 0 stale, 0 unavailable). Source: SingStat Table Builder (DOS, MAS, MOM, URA, HDB).
 
-These are directional readings of leading indicators against their own history. They are not a forecast of prices or rents.
+These are directional readings of factors against their own history. They are not a forecast of prices or rents.
 
 ## 1. Summary
 
-| Indicator | Latest period | Value | Change on previous period | Change on year ago | Evidence: sale / rent | Pressure on sale prices | Pressure on rents |
+| Factor | Latest period | Value | Change on previous period | Change on year ago | Evidence: sale / rent | Pressure on sale prices | Pressure on rents |
 |---|---|---|---|---|---|---|---|
 | Private Residential Vacancy Rate | 2026 Q2 | 6.35% | +0.18 pp | -0.80 pp | lead / strict | upward | upward |
 | GDP at Current Market Prices | 2026 Q2 | S$216,339.3 million | +5.76% * | +12.39% | lead / strict | upward | upward |
@@ -25,7 +25,7 @@ Evidence comes from the factor screening (`python -m housing_agent select-factor
 - **lead**: passes the lead test only (leads the market, but adds nothing beyond its momentum).
 - **prior**: kept on economic reasoning; not statistically supported in the screening.
 
-## 2. Indicators and traceability
+## 2. Factors and traceability
 
 ### Private Residential Vacancy Rate
 
@@ -35,7 +35,15 @@ Evidence comes from the factor screening (`python -m housing_agent select-factor
 
 **Statistical evidence.** Sale: lead. Rent: strict. The strongest factor in the screening. For rents both the level and the four-quarter change pass the strict test. For sale prices the change passes the lead test.
 
-**Source.** URBAN REDEVELOPMENT AUTHORITY; All Types Private Residential Properties Vacant / All Types Private Residential Properties Available x 100. Unit: Per Cent. Observed: quarterly. Source last updated: 24/07/2026.
+**Possible time lag.** Short. In the screening the vacancy rate leads rents and sale prices by about one quarter, and its four-quarter change still leads rents a year ahead.
+
+**Limitations.** Covers private housing only; public (HDB) flats are excluded. A falling rate can reflect units withdrawn for redevelopment rather than stronger demand.
+
+**Source.** URBAN REDEVELOPMENT AUTHORITY; All Types Private Residential Properties Vacant / All Types Private Residential Properties Available x 100 (https://tablebuilder.singstat.gov.sg/table/TS/M400841).
+
+**Unit.** Per Cent. **Observation frequency.** Quarterly. **Update frequency.** Quarterly. URA releases its real estate statistics about four weeks after the quarter ends. Source last updated 24/07/2026.
+
+**Latest observation.** 2026 Q2, as of report date 2026-10-04.
 
 | Figure | Calculation | Published observations used |
 |---|---|---|
@@ -43,7 +51,7 @@ Evidence comes from the factor screening (`python -m housing_agent select-factor
 | quarter-on-quarter: +0.18 pp | 6.3500 - 6.1669 | 2026 Q2 = 6.3500 (26961 / 424581 x 100); 2026 Q1 = 6.1669 (26158 / 424165 x 100) |
 | year-on-year: -0.80 pp | 6.3500 - 7.1469 | 2026 Q2 = 6.3500 (26961 / 424581 x 100); 2025 Q2 = 7.1469 (30027 / 420142 x 100) |
 
-Snapshot: `stock_vacant/20261004T135334079597Z_ecc817b0.json` (sha256 `ecc817b04074`, retrieved 2026-10-04T13:53:34Z); `stock_available/20261004T135333951062Z_de735fca.json` (sha256 `de735fca9f3f`, retrieved 2026-10-04T13:53:33Z)
+Snapshot: `stock_vacant/20261004T141658732506Z_ecc817b0.json` (sha256 `ecc817b04074`, retrieved 2026-10-04T14:16:58Z); `stock_available/20261004T141658600121Z_de735fca.json` (sha256 `de735fca9f3f`, retrieved 2026-10-04T14:16:58Z)
 
 ### GDP at Current Market Prices
 
@@ -53,7 +61,15 @@ Snapshot: `stock_vacant/20261004T135334079597Z_ecc817b0.json` (sha256 `ecc817b04
 
 **Statistical evidence.** Sale: lead. Rent: strict. For sale prices nominal GDP is significant on its own in the lead test but is nearly collinear with real GDP, which the screening keeps as the stronger of the two. Nominal GDP is used here because it is the one that passes the strict test for rents.
 
-**Source.** SINGAPORE DEPARTMENT OF STATISTICS; table M015651, series 1 "GDP At Current Market Prices". Unit: Million Dollars. Observed: quarterly, non-seasonally adjusted. Source last updated: 11/08/2026.
+**Possible time lag.** About one quarter in the screening, for both sale prices and rents.
+
+**Limitations.** Not seasonally adjusted, so only the year-on-year change is usable. Subject to revision. GDP growth is not the same as household income growth.
+
+**Source.** SINGAPORE DEPARTMENT OF STATISTICS; table M015651, series 1 "GDP At Current Market Prices" (https://tablebuilder.singstat.gov.sg/table/TS/M015651).
+
+**Unit.** Million Dollars. **Observation frequency.** Quarterly, non-seasonally adjusted. **Update frequency.** Quarterly. Advance estimates come about two weeks after the quarter ends and detailed figures about six weeks after; earlier quarters are revised. Source last updated 11/08/2026.
+
+**Latest observation.** 2026 Q2, as of report date 2026-10-04.
 
 | Figure | Calculation | Published observations used |
 |---|---|---|
@@ -61,7 +77,7 @@ Snapshot: `stock_vacant/20261004T135334079597Z_ecc817b0.json` (sha256 `ecc817b04
 | quarter-on-quarter: +5.76% | (216339.3 / 204554.1 - 1) x 100 | 2026 Q2 = 216339.3; 2026 Q1 = 204554.1 |
 | year-on-year: +12.39% | (216339.3 / 192490 - 1) x 100 | 2026 Q2 = 216339.3; 2025 Q2 = 192490 |
 
-Snapshot: `gdp_nominal/20261004T135334238918Z_87b65120.json` (sha256 `87b65120efd9`, retrieved 2026-10-04T13:53:34Z)
+Snapshot: `gdp_nominal/20261004T141658854601Z_87b65120.json` (sha256 `87b65120efd9`, retrieved 2026-10-04T14:16:58Z)
 
 ### HDB Resale Price Index (2009 Q1 = 100)
 
@@ -71,7 +87,15 @@ Snapshot: `gdp_nominal/20261004T135334238918Z_87b65120.json` (sha256 `87b65120ef
 
 **Statistical evidence.** Sale: lead. Rent: not used. Passes the lead test for private sale prices. No relationship with private rents was found, so it is not read for the rental market.
 
-**Source.** HOUSING AND DEVELOPMENT BOARD; table M212161, series 1 "HDB Resale Price Index". Unit: Index. Observed: quarterly. Source last updated: 24/07/2026.
+**Possible time lag.** About one quarter ahead of private sale prices in the screening.
+
+**Limitations.** Public and private prices respond to the same economic cycle, so part of the relationship is common movement rather than a causal upgrader effect. Cooling measures aimed at one segment can break the link.
+
+**Source.** HOUSING AND DEVELOPMENT BOARD; table M212161, series 1 "HDB Resale Price Index" (https://tablebuilder.singstat.gov.sg/table/TS/M212161).
+
+**Unit.** Index. **Observation frequency.** Quarterly. **Update frequency.** Quarterly. HDB publishes the index about four weeks after the quarter ends. Source last updated 24/07/2026.
+
+**Latest observation.** 2026 Q2, as of report date 2026-10-04.
 
 | Figure | Calculation | Published observations used |
 |---|---|---|
@@ -79,7 +103,7 @@ Snapshot: `gdp_nominal/20261004T135334238918Z_87b65120.json` (sha256 `87b65120ef
 | quarter-on-quarter: -0.29% | (202.8 / 203.4 - 1) x 100 | 2026 Q2 = 202.8; 2026 Q1 = 203.4 |
 | year-on-year: -0.05% | (202.8 / 202.9 - 1) x 100 | 2026 Q2 = 202.8; 2025 Q2 = 202.9 |
 
-Snapshot: `hdb_resale/20261004T135334373834Z_5b818659.json` (sha256 `5b818659642f`, retrieved 2026-10-04T13:53:34Z)
+Snapshot: `hdb_resale/20261004T141658993126Z_5b818659.json` (sha256 `5b818659642f`, retrieved 2026-10-04T14:16:58Z)
 
 ### Resident Unemployment Rate (seasonally adjusted)
 
@@ -89,7 +113,15 @@ Snapshot: `hdb_resale/20261004T135334373834Z_5b818659.json` (sha256 `5b818659642
 
 **Statistical evidence.** Sale: not used. Rent: lead. Passes the lead test for rents. For sale prices it is not significant, and after controlling for momentum the estimated sign is positive, which is consistent with prices rebounding after downturns as policy eases. It is therefore not read for the sale market.
 
-**Source.** MINISTRY OF MANPOWER; table M182342, series 2 "Resident Unemployment Rate, (SA)". Unit: Per Cent. Observed: quarterly, seasonally adjusted. Source last updated: 22/09/2026.
+**Possible time lag.** About one quarter ahead of rents in the screening.
+
+**Limitations.** Moves within a narrow range, so small changes carry little information. Does not cover non-resident workers, who make up much of the rental demand.
+
+**Source.** MINISTRY OF MANPOWER; table M182342, series 2 "Resident Unemployment Rate, (SA)" (https://tablebuilder.singstat.gov.sg/table/TS/M182342).
+
+**Unit.** Per Cent. **Observation frequency.** Quarterly, seasonally adjusted. **Update frequency.** Quarterly. MOM publishes preliminary estimates about one month after the quarter ends and final figures about twelve weeks after. Seasonally adjusted figures are revised once a year. Source last updated 22/09/2026.
+
+**Latest observation.** 2026 Q2, as of report date 2026-10-04.
 
 | Figure | Calculation | Published observations used |
 |---|---|---|
@@ -97,7 +129,7 @@ Snapshot: `hdb_resale/20261004T135334373834Z_5b818659.json` (sha256 `5b818659642
 | quarter-on-quarter: +0.00 pp | 2.9 - 2.9 | 2026 Q2 = 2.9; 2026 Q1 = 2.9 |
 | year-on-year: +0.20 pp | 2.9 - 2.7 | 2026 Q2 = 2.9; 2025 Q2 = 2.7 |
 
-Snapshot: `unemployment_resident/20261004T135334484456Z_f35c76ab.json` (sha256 `f35c76ab87ef`, retrieved 2026-10-04T13:53:34Z)
+Snapshot: `unemployment_resident/20261004T141659100288Z_f35c76ab.json` (sha256 `f35c76ab87ef`, retrieved 2026-10-04T14:16:59Z)
 
 ### Private Non-Landed Homes in the Supply Pipeline
 
@@ -107,7 +139,15 @@ Snapshot: `unemployment_resident/20261004T135334484456Z_f35c76ab.json` (sha256 `
 
 **Statistical evidence.** Sale: not used. Rent: not used. Monitored but not read as a directional signal. It passes the lead test for both markets with a POSITIVE sign, the opposite of the supply argument. The likely reason is that developers launch projects when the market is strong, so at short horizons the pipeline reflects current conditions rather than future supply pressure. The supply effect, if any, would appear at horizons longer than the eight quarters tested.
 
-**Source.** URBAN REDEVELOPMENT AUTHORITY; table M400391, series 2 "Total Non-Landed Properties". Unit: Number Of Units. Observed: quarterly. Source last updated: 24/07/2026.
+**Possible time lag.** By construction two to four years, the time from planning to completion. This is longer than the eight quarters the screening could test.
+
+**Limitations.** At short horizons it moves with the market cycle, not against it (see the statistical evidence above). Planned units may be delayed or cancelled.
+
+**Source.** URBAN REDEVELOPMENT AUTHORITY; table M400391, series 2 "Total Non-Landed Properties" (https://tablebuilder.singstat.gov.sg/table/TS/M400391).
+
+**Unit.** Number Of Units. **Observation frequency.** Quarterly. **Update frequency.** Quarterly. URA releases its real estate statistics about four weeks after the quarter ends. Source last updated 24/07/2026.
+
+**Latest observation.** 2026 Q2, as of report date 2026-10-04.
 
 | Figure | Calculation | Published observations used |
 |---|---|---|
@@ -115,7 +155,7 @@ Snapshot: `unemployment_resident/20261004T135334484456Z_f35c76ab.json` (sha256 `
 | quarter-on-quarter: +7.41% | (51677 / 48111 - 1) x 100 | 2026 Q2 = 51677; 2026 Q1 = 48111 |
 | year-on-year: +6.61% | (51677 / 48474 - 1) x 100 | 2026 Q2 = 51677; 2025 Q2 = 48474 |
 
-Snapshot: `pipeline_nonlanded/20261004T135334590277Z_317f8753.json` (sha256 `317f875344ed`, retrieved 2026-10-04T13:53:34Z)
+Snapshot: `pipeline_nonlanded/20261004T141659218953Z_317f8753.json` (sha256 `317f875344ed`, retrieved 2026-10-04T14:16:59Z)
 
 ### 3-Month Compounded SORA
 
@@ -125,7 +165,15 @@ Snapshot: `pipeline_nonlanded/20261004T135334590277Z_317f8753.json` (sha256 `317
 
 **Statistical evidence.** Sale: prior. Rent: not used. Not significant in the screening, but the series only starts in 2005 (about 75 quarters), so the test has little power. It is kept because it is the reference rate for home loans, and is labelled as resting on economic reasoning only.
 
-**Source.** MONETARY AUTHORITY OF SINGAPORE; table M700071, series 23 "Compounded Singapore Overnight Rate Average (SORA) - 3 Month". Unit: Per Cent Per Annum. Observed: monthly. Source last updated: 14/09/2026.
+**Possible time lag.** Not estimated here. On economic reasoning two to four quarters, because floating-rate loans reprice every one to three months and purchase decisions follow with a delay.
+
+**Limitations.** History starts in 2005, too short to test reliably. Many borrowers hold fixed-rate packages, which delays the pass-through. Rates and prices both respond to the global cycle.
+
+**Source.** MONETARY AUTHORITY OF SINGAPORE; table M700071, series 23 "Compounded Singapore Overnight Rate Average (SORA) - 3 Month" (https://tablebuilder.singstat.gov.sg/table/TS/M700071).
+
+**Unit.** Per Cent Per Annum. **Observation frequency.** Monthly. **Update frequency.** Monthly in this table, about two weeks after the month ends. MAS publishes the underlying rate every business day. Source last updated 14/09/2026.
+
+**Latest observation.** 2026 Aug, as of report date 2026-10-04.
 
 | Figure | Calculation | Published observations used |
 |---|---|---|
@@ -133,7 +181,7 @@ Snapshot: `pipeline_nonlanded/20261004T135334590277Z_317f8753.json` (sha256 `317
 | month-on-month: +5.1 bp | (1.1863 - 1.1354) x 100 | 2026 Aug = 1.1863; 2026 Jul = 1.1354 |
 | year-on-year: -37.8 bp | (1.1863 - 1.5638) x 100 | 2026 Aug = 1.1863; 2025 Aug = 1.5638 |
 
-Snapshot: `sora/20261004T135334732769Z_04768d2d.json` (sha256 `04768d2d8a07`, retrieved 2026-10-04T13:53:34Z)
+Snapshot: `sora/20261004T141659341330Z_04768d2d.json` (sha256 `04768d2d8a07`, retrieved 2026-10-04T14:16:59Z)
 
 ## 3. Data quality
 

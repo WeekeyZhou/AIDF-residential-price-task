@@ -22,7 +22,7 @@ EVIDENCE = {
     "lead": "passes the lead test only (leads the market, but adds nothing beyond its momentum)",
     "prior": "kept on economic reasoning; not statistically supported in the screening",
 }
-DISCLAIMER = ("These are directional readings of leading indicators against their own "
+DISCLAIMER = ("These are directional readings of factors against their own "
               "history. They are not a forecast of prices or rents.")
 _NUMBER = re.compile(r"\d[\d,]*(?:\.\d+)?")
 

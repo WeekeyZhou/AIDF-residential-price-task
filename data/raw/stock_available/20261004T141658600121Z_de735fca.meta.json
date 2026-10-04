@@ -1,0 +1,9 @@
+{
+  "indicator_id": "stock_available",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M400841?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T14:16:58.600121+00:00",
+  "bytes": 6913,
+  "sha256": "de735fca9f3f948151b891b12f0461d7b88df424e898ecaf2e25bb1abe2090fc",
+  "file": "20261004T141658600121Z_de735fca.json"
+}

@@ -1,0 +1,9 @@
+{
+  "indicator_id": "gdp_nominal",
+  "url": "https://tablebuilder.singstat.gov.sg/api/table/tabledata/M015651?limit=2000&sortBy=key+desc&seriesNoORrowNo=1",
+  "http_status": 200,
+  "retrieved_at": "2026-10-04T14:16:58.854601+00:00",
+  "bytes": 8439,
+  "sha256": "87b65120efd9005715a434348389379a8e766d516478f65a985282b3b2af407e",
+  "file": "20261004T141658854601Z_87b65120.json"
+}
